@@ -1,5 +1,3 @@
-from gevent import monkey
-monkey.patch_all()
 from dateutil import rrule
 from datetime import datetime, timezone
 from itertools import product
@@ -7,7 +5,6 @@ import time
 import os
 
 #from concurrent.futures import ThreadPoolExecutor
-import gevent
 import requests
 from functools import partial
 from tqdm import tqdm
@@ -436,13 +433,13 @@ def create_file_list(
             )
         )
     return r
-def generate_urls(start_date,end_date, fcst_cycle):
+def generate_urls(start_date,end_date, fcst_cycle, lead_time):
 
     
     start_date = start_date
     end_date   = end_date
     fcst_cycle = fcst_cycle
-    lead_time = [1]
+    lead_time = lead_time
     # fcst_cycle = None # Retrieves a full day for each day within the range given.
     runinput = 1
     varinput = 1
@@ -459,9 +456,18 @@ def generate_urls(start_date,end_date, fcst_cycle):
         end_date,
         fcst_cycle,
         urlbaseinput,
+        lead_time,
     )
     if os.path.exists("filenamelist.txt"):
         os.remove("filenamelist.txt")   
     with open("filenamelist.txt", "wt") as file:
         for item in file_list:
             file.write(f"{item}.json\n")
+
+
+if __name__=='__main__':
+    start_date = "202201120000"
+    end_date   = "202201120000"
+    fcst_cycle = [0,8]
+    lead_time = [1,23]
+    generate_urls(start_date, end_date, fcst_cycle, lead_time)
